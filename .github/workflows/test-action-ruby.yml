@@ -1,10 +1,12 @@
 name: Test action (Ruby)
 
 on:
-  pull_request:
   push:
     branches:
-      - master
+      - '**'
+  pull_request:
+    branches:
+      - '**'
 
 jobs:
   test-output-method-setup:
@@ -48,7 +50,6 @@ jobs:
         id: get-versions
         with:
           language: ruby
-          min-version: EOL
 
   test-output-method-load-eol:
     name: Build Maxtrix for min-version=EOL

@@ -1,4 +1,4 @@
-name: Test action (Python)
+name: Test action (Go)
 
 on:
   push:
@@ -21,8 +21,8 @@ jobs:
         uses: ./
         id: get-versions
         with:
-          language: python
-          min-version: 3.8
+          language: go
+          min-version: "1.17"
 
   test-output-method-load:
     name: Build Maxtrix for min-version=3
@@ -32,10 +32,10 @@ jobs:
       matrix:
         version-matrix: ${{fromJson(needs.test-output-method-setup.outputs.version-matrix)}}
     steps:
-      - name: Setup Python ${{ matrix.version-matrix }}
-        uses: actions/setup-python@v4
+      - name: Setup Go ${{ matrix.version-matrix }}
+        uses: actions/setup-go@v3
         with:
-          python-version: ${{ matrix.version-matrix }}
+          go-version: ${{ matrix.version-matrix }}
 
   test-output-method-setup-eol:
     name: Set min-version=EOL
@@ -49,7 +49,7 @@ jobs:
         uses: ./
         id: get-versions
         with:
-          language: python
+          language: go
 
   test-output-method-load-eol:
     name: Build Maxtrix for min-version=EOL
@@ -59,10 +59,10 @@ jobs:
       matrix:
         version-matrix: ${{fromJson(needs.test-output-method-setup-eol.outputs.version-matrix)}}
     steps:
-      - name: Setup Python ${{ matrix.version-matrix }}
-        uses: actions/setup-python@v4
+      - name: Setup Go ${{ matrix.version-matrix }}
+        uses: actions/setup-go@v3
         with:
-          python-version: ${{ matrix.version-matrix }}
+          go-version: ${{ matrix.version-matrix }}
 
   test-output-method-setup-highest-only:
     name: Highest version only
@@ -76,7 +76,7 @@ jobs:
         uses: ./
         id: get-versions
         with:
-          language: python
+          language: go
           highest-only: true
 
   test-output-method-load-highest-only:
@@ -84,7 +84,7 @@ jobs:
     needs: test-output-method-setup-highest-only
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Python ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
-        uses: actions/setup-python@v4
+      - name: Setup Go ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+        uses: actions/setup-go@v3
         with:
-          python-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+          go-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
