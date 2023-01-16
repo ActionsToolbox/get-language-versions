@@ -1,0 +1,90 @@
+name: Test action (PHP)
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  test-output-method-setup:
+    name: min-version=7.3
+    runs-on: ubuntu-latest
+    outputs:
+      version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: php
+          min-version: "7.3"
+
+  test-output-method-load:
+    name: min-version=7.3
+    needs: test-output-method-setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version-matrix: ${{fromJson(needs.test-output-method-setup.outputs.version-matrix)}}
+    steps:
+      - name: Setup PHP ${{ matrix.version-matrix }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.version-matrix }}
+
+  test-output-method-setup-eol:
+    name: min-version=EOL
+    runs-on: ubuntu-latest
+    outputs:
+      version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: php
+
+  test-output-method-load-eol:
+    name: min-version=EOL
+    needs: test-output-method-setup-eol
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version-matrix: ${{fromJson(needs.test-output-method-setup-eol.outputs.version-matrix)}}
+    steps:
+      - name: Setup PHP ${{ matrix.version-matrix }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.version-matrix }}
+
+  test-output-method-setup-highest-only:
+    name: Highest version only
+    runs-on: ubuntu-latest
+    outputs:
+      highest-version: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: php
+          highest-only: true
+
+  test-output-method-load-highest-only:
+    name: Build for highest version only
+    needs: test-output-method-setup-highest-only
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup PHP ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
