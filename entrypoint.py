@@ -70,7 +70,7 @@ def strtobool(bool_str: str) -> bool:
     Returns:
         bool -- The resultant boolean value.
     """
-    if bool_str in ["true", "1"]:
+    if bool_str.lower() in ["true", "1"]:
         return True
     return False
 

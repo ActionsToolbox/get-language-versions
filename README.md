@@ -70,13 +70,13 @@ ${{ steps.get-versions.outputs.latest-versions }}
 
 ## All Parameters
 
-| Parameters          | Required | Default  | Options                             |
-| ------------------- |:--------:| -------- | ----------------------------------- |
-| language            | Yes      |          | go, node, nodejs, php, python, ruby |
-| min-version         | No       | "EOL"    | semver, EOL, ALL                    |
-| max-version         | No       | "latest" | semver, latest                      |
-| include-prereleases | No       | false    | false, true                         |
-| highest-only        | No       | false    | false, true                         |
+| Parameters          | Required | Default  | Options                                   |
+| ------------------- |:--------:| -------- | ----------------------------------------- |
+| language            | Yes      |          | Go, Node, PHP, Python, Ruby or Terraform. |
+| min-version         | No       | "EOL"    | semver, "EOL" or "ALL"                    |
+| max-version         | No       | "latest" | semver or "latest"                        |
+| include-prereleases | No       | false    | true or false                             |
+| highest-only        | No       | false    | true or false                             |
 
 See examples below for recommended usage.
 
