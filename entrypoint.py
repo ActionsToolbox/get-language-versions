@@ -20,6 +20,8 @@ import sys
 import requests
 from packaging import version as semver
 
+from bs4 import BeautifulSoup
+
 REQUESTS_TIMEOUT: int = 5
 MAX_VERSION: semver.Version = semver.parse('99999')
 MIN_VERSION: semver.Version = semver.parse('0')
@@ -30,24 +32,28 @@ URLS: dict[str, dict[str, str]] = {
         "eol_url": 'https://endoflife.date/api/go.json'
     },
     "node": {
-        "versions_url":  'https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json',
+        "versions_url": 'https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json',
         "eol_url": 'https://endoflife.date/api/nodejs.json'
     },
     "nodejs": {
-        "versions_url":  'https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json',
+        "versions_url": 'https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json',
         "eol_url": 'https://endoflife.date/api/nodejs.json'
     },
     "php": {
-        "versions_url":  'https://phpreleases.com/api/releases/',
+        "versions_url": 'https://phpreleases.com/api/releases/',
         "eol_url": 'https://endoflife.date/api/php.json'
     },
     "python": {
-        "versions_url":  'https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json',
+        "versions_url": 'https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json',
         "eol_url": 'https://endoflife.date/api/python.json'
     },
     "ruby": {
         "versions_url": 'https://raw.githubusercontent.com/ruby/setup-ruby/master/ruby-builder-versions.json',
         "eol_url": 'https://endoflife.date/api/ruby.json'
+    },
+    "terraform": {
+        "versions_url": 'https://releases.hashicorp.com/terraform/',
+        "eol_url": 'https://endoflife.date/api/terraform.json'
     }
 }
 
@@ -128,7 +134,7 @@ def get_minimum_version(min_version: str, language: str) -> str:
     return min_version
 
 
-def get_stable_versions(language: str) -> list:
+def get_stable_versions(language: str, return_json: bool = True) -> list:
     """
     Get a list of stable versions.
 
@@ -142,7 +148,9 @@ def get_stable_versions(language: str) -> list:
     """
     versions_url: str = URLS[language]["versions_url"]
 
-    return requests.get(versions_url, timeout=REQUESTS_TIMEOUT).json()
+    if return_json is True:
+        return requests.get(versions_url, timeout=REQUESTS_TIMEOUT).json()
+    return requests.get(versions_url, timeout=REQUESTS_TIMEOUT).text
 
 
 def compare_min_max_value(versions_dict: dict, version: str, min_version: str, max_version: str) -> dict:
@@ -281,6 +289,33 @@ def get_ruby_versions(stable_versions: dict) -> list:
     return versions
 
 
+def get_terraform_versions(stable_versions: dict) -> list:
+    """
+    Get versions from returned dataset.
+
+    Different version urls return the version data in different formats, this handles the data for Terraform only.
+
+    Arguments:
+        stable_versions (dict) -- The dataset returned from the versions-url.
+
+    Returns:
+        list -- A list containing JUST the version numbers.
+    """
+    versions: list = []
+
+    soup: BeautifulSoup = BeautifulSoup(stable_versions, features="html.parser")
+    for link in soup.findAll('a'):
+        version: str = link['href'].replace('/terraform/', '').replace('/', '')
+        try:
+            semver.Version(version)
+        except semver.InvalidVersion:
+            continue
+        else:
+            versions.append(version)
+
+    return versions
+
+
 def output_version_details(versions: list | str) -> None:
     """
     Output the version information.
@@ -328,12 +363,17 @@ def main(language: str, min_version: str = 'EOL', max_version: str = 'LATEST', i
     parsed_include_prereleases: bool = strtobool(include_prereleases)
     output_highest_only: bool = strtobool(highest_only)
 
-    stable_versions: list = get_stable_versions(language)
+    if language.upper() == "TERRAFORM":
+        stable_versions: list = get_stable_versions(language, False)
+    else:
+        stable_versions: list = get_stable_versions(language)
 
     if language.upper() == "PHP":
         versions: list = get_php_versions(stable_versions)
     elif language.upper() == "RUBY":
         versions = get_ruby_versions(stable_versions)
+    elif language.upper() == "TERRAFORM":
+        versions = get_terraform_versions(stable_versions)
     else:
         versions = get_versions(stable_versions)
 

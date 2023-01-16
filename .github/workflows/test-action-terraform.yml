@@ -1,0 +1,90 @@
+name: Test action (Terraform)
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  test-output-method-setup:
+    name: min-version=1.1
+    runs-on: ubuntu-latest
+    outputs:
+      version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: hashicorp/setup-terraform@v2
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: terraform
+          min-version: "1.1"
+
+  test-output-method-load:
+    name: min-version=1.2
+    needs: test-output-method-setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version-matrix: ${{fromJson(needs.test-output-method-setup.outputs.version-matrix)}}
+    steps:
+      - name: Setup Terraform ${{ matrix.version-matrix }}
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ matrix.version-matrix }}
+
+  test-output-method-setup-eol:
+    name: min-version=EOL
+    runs-on: ubuntu-latest
+    outputs:
+      version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: terraform
+
+  test-output-method-load-eol:
+    name: min-version=EOL
+    needs: test-output-method-setup-eol
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version-matrix: ${{fromJson(needs.test-output-method-setup-eol.outputs.version-matrix)}}
+    steps:
+      - name: Setup Terraform ${{ matrix.version-matrix }}
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ matrix.version-matrix }}
+
+  test-output-method-setup-highest-only:
+    name: Highest version only
+    runs-on: ubuntu-latest
+    outputs:
+      highest-version: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: terraform
+          highest-only: true
+
+  test-output-method-load-highest-only:
+    name: Build for highest version only
+    needs: test-output-method-setup-highest-only
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Terraform ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}

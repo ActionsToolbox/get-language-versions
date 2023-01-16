@@ -35,13 +35,14 @@ This action was inspired by [latest-python-versions](https://github.com/snok/lat
 
 This action will fetch up-to-date data on the latest version(s) available on Github Actions for a given set of languages.
 
-| Language      | GitHub Action                                           | Version Source                                                                                           |
-| ------------- |:-------------------------------------------------------:| :-------------------------------------------------------------------------------------------------------:|
-| Go            | [setup-go](https://github.com/actions/setup-go)         | [go-versions](https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json)         |
-| Node / NodeJS | [setup-node](https://github.com/actions/setup-node)     | [node-versions](https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json)     |
-| PHP           | [setup-php](https://github.com/shivammathur/setup-php)  | [php-versions](https://phpreleases.com/api/releases/)                                                    |
-| Python        | [setup-python](https://github.com/actions/setup-python) | [python-versions](https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json) |
-| Ruby          | [setup-ruby](https://github.com/ruby/setup-ruby)        | [ruby-versions](https://raw.githubusercontent.com/ruby/setup-ruby/master/ruby-builder-versions.json)     |
+| Language      | GitHub Action                                                   | Version Source                                                                                           |
+| ------------- |:---------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------:|
+| Go            | [setup-go](https://github.com/actions/setup-go)                 | [go-versions](https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json)         |
+| Node / NodeJS | [setup-node](https://github.com/actions/setup-node)             | [node-versions](https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json)     |
+| PHP           | [setup-php](https://github.com/shivammathur/setup-php)          | [php-versions](https://phpreleases.com/api/releases/)                                                    |
+| Python        | [setup-python](https://github.com/actions/setup-python)         | [python-versions](https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json) |
+| Ruby          | [setup-ruby](https://github.com/ruby/setup-ruby)                | [ruby-versions](https://raw.githubusercontent.com/ruby/setup-ruby/master/ruby-builder-versions.json)     |
+| Terraform     | [setup-terraform](https://github.com/hashicorp/setup-terraform) | [terraform-versions](https://releases.hashicorp.com/terraform/)                                          |
 
 If you're already running tests on multiple versions of a language, this action will allow you to replace your static
 matrix definitions with dynamic ones. It will also allow you to define a specific version if you are running a single version of a language.
