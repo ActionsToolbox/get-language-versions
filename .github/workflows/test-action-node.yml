@@ -1,4 +1,4 @@
-name: Test action (NodeJS)
+name: Test action (Node)
 
 on:
   push:
@@ -87,4 +87,4 @@ jobs:
       - name: Setup Node ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
         uses: actions/setup-node@v3
         with:
-          php-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+          node-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
