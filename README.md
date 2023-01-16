@@ -3,11 +3,14 @@
         <img src="https://cdn.wolfsoftware.com/assets/images/github/organisations/actionstoolbox/black-and-white-circle-256.png" alt="ActionsToolbox logo" />
     </a>
     <br />
-    <a href="https://github.com/ActionsToolbox/get-language-versions-action/actions/workflows/cicd-pipeline-local.yml">
-        <img src="https://img.shields.io/github/actions/workflow/status/ActionsToolbox/get-language-versions-action/cicd-pipeline-local.yml?branch=master&label=local%20pipeline&style=for-the-badge" alt="Github Build Status" /> <img
+    <a href="https://github.com/ActionsToolbox/get-language-versions-action/actions/workflows/cicd-pipeline.yml">
+        <img src="https://img.shields.io/github/actions/workflow/status/ActionsToolbox/get-language-versions-action/cicd-pipeline.yml?branch=master&label=CICD%20pipeline&style=for-the-badge" alt="Github Build Status" />
     </a>
-    <a href="https://github.com/ActionsToolbox/get-language-versions-action/actions/workflows/cicd-pipeline-shared.yml">
-        <img src="https://img.shields.io/github/actions/workflow/status/ActionsToolbox/get-language-versions-action/cicd-pipeline-shared.yml?branch=master&label=shared%20pipeline&style=for-the-badge" alt="Github Build Status" />
+    <a href="https://github.com/ActionsToolbox/get-language-versions-action/releases/latest">
+        <img src="https://img.shields.io/github/v/release/ActionsToolbox/get-language-versions-action?color=blue&label=Latest%20Release&style=for-the-badge" alt="Release">
+    </a>
+    <a href="https://github.com/ActionsToolbox/get-language-versions-action/releases/latest">
+        <img src="https://img.shields.io/github/commits-since/ActionsToolbox/get-language-versions-action/latest.svg?color=blue&style=for-the-badge" alt="Commits since release">
     </a>
     <br />
     <a href="https://github.com/ActionsToolbox/get-language-versions-action/blob/master/.github/CODE_OF_CONDUCT.md">
