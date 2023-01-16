@@ -10,7 +10,7 @@ on:
 
 jobs:
   test-output-method-setup:
-    name: Set min-version=3
+    name: min-version=3.8
     runs-on: ubuntu-latest
     outputs:
       version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
@@ -22,10 +22,10 @@ jobs:
         id: get-versions
         with:
           language: python
-          min-version: 3.8
+          min-version: "3.8"
 
   test-output-method-load:
-    name: Build Maxtrix for min-version=3
+    name: min-version=3.8
     needs: test-output-method-setup
     runs-on: ubuntu-latest
     strategy:
