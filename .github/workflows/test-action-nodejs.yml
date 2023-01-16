@@ -1,0 +1,90 @@
+name: Test action (NodeJS)
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  test-output-method-setup:
+    name: min-version=18
+    runs-on: ubuntu-latest
+    outputs:
+      version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: node
+          min-version: "18"
+
+  test-output-method-load:
+    name: min-version=18
+    needs: test-output-method-setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version-matrix: ${{fromJson(needs.test-output-method-setup.outputs.version-matrix)}}
+    steps:
+      - name: Setup Node ${{ matrix.version-matrix }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.version-matrix }}
+
+  test-output-method-setup-eol:
+    name: min-version=EOL
+    runs-on: ubuntu-latest
+    outputs:
+      version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: node
+
+  test-output-method-load-eol:
+    name: min-version=EOL
+    needs: test-output-method-setup-eol
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version-matrix: ${{fromJson(needs.test-output-method-setup-eol.outputs.version-matrix)}}
+    steps:
+      - name: Setup Node ${{ matrix.version-matrix }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.version-matrix }}
+
+  test-output-method-setup-highest-only:
+    name: Highest version only
+    runs-on: ubuntu-latest
+    outputs:
+      highest-version: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: node
+          highest-only: true
+
+  test-output-method-load-highest-only:
+    name: Build for highest version only
+    needs: test-output-method-setup-highest-only
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+        uses: actions/setup-node@v3
+        with:
+          php-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
