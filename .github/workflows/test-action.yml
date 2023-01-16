@@ -1,0 +1,74 @@
+name: Test action
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  test-output-method-setup:
+    runs-on: ubuntu-latest
+    outputs:
+      version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        id: get-versions
+        with:
+          language: python
+          min-version: 3.8
+
+  test-output-method-load:
+    needs: test-output-method-setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ${{fromJson(needs.test-output-method-setup.outputs.version-matrix)}}
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+  test-output-method-setup-eol:
+    runs-on: ubuntu-latest
+    outputs:
+      version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        id: get-versions
+        with:
+          language: python
+          min-version: EOL
+
+  test-output-method-load-eol:
+    needs: test-output-method-setup-eol
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version-matrix: ${{fromJson(needs.test-output-method-setup-eol.outputs.version-matrix)}}
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.version-matrix }}
+
+  test-output-method-setup-highest-only:
+    runs-on: ubuntu-latest
+    outputs:
+      highest-version: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        id: get-versions
+        with:
+          language: python
+          highest-only: true
+
+  test-output-method-load-highest-only:
+    needs: test-output-method-setup-highest-only
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}

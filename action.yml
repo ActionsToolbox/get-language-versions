@@ -1,0 +1,37 @@
+name: 'Get Latest Language Versions'
+description: 'Get latest language versions'
+branding:
+  icon: "tag"
+  color: "gray-dark"
+inputs:
+  language:
+    description: 'The language you want to get the versions for (go, nodejs, php, python or ruby)'
+    required: true
+  min-version:
+    description: 'The minimum major.minor version to include or "EOL". or "ALL"'
+    required: false
+    default: 'eol'
+  max-version:
+    description: 'The maximum major.minor version to include or "latest".'
+    required: false
+    default: 'latest'
+  include-prereleases:
+    description: 'Whether to include new version of Python that have no official releases.'
+    required: false
+    default: 'false'
+  highest-only:
+    description: 'Whether to get the highest version only or all versions as a matrix.'
+    required: false
+    default: 'false'
+outputs:
+  latest-versions:
+    description: 'Version or List of versions that can be loaded as a matrix with fromJson'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.language }}
+    - ${{ inputs.min-version }}
+    - ${{ inputs.max-version }}
+    - ${{ inputs.include-prereleases }}
+    - ${{ inputs.highest-only }}
