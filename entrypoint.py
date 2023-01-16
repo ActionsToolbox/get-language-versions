@@ -94,7 +94,7 @@ def get_minimum_version_from_oel(language: str) -> str:
     future: datetime.date = datetime.date.today() + datetime.timedelta(3650)
     for release in requests.get(versions_url, timeout=REQUESTS_TIMEOUT).json():
         try:
-            semver.parse(release['cycle'])
+            semver.Version(release['cycle'])
         except semver.InvalidVersion:
             continue
 
@@ -199,7 +199,7 @@ def process_versions(stable_versions: list, min_version: str, max_version: str, 
 
     for version in stable_versions:
         try:
-            semver.parse(version)
+            semver.Version(version)
         except semver.InvalidVersion:
             continue
 
@@ -231,7 +231,7 @@ def get_versions(stable_versions: dict) -> list:
         version: str = version_object['version']
 
         try:
-            if semver.parse(version):
+            if semver.Version(version):
                 versions.append(version)
         except semver.InvalidVersion:
             continue
@@ -257,7 +257,7 @@ def get_php_versions(stable_versions: dict) -> list:
         version: str = f"{version_object['major']}.{version_object['minor']}.{version_object['release']}"
 
         try:
-            if semver.parse(version):
+            if semver.Version(version):
                 versions.append(version)
         except semver.InvalidVersion:
             continue
@@ -281,7 +281,7 @@ def get_ruby_versions(stable_versions: dict) -> list:
 
     for version in stable_versions["ruby"]:
         try:
-            if semver.parse(version):
+            if semver.Version(version):
                 versions.append(version)
         except semver.InvalidVersion:
             continue
