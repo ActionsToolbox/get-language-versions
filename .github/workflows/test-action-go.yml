@@ -10,7 +10,7 @@ on:
 
 jobs:
   test-output-method-setup:
-    name: Set min-version=3
+    name: min-version=1.17
     runs-on: ubuntu-latest
     outputs:
       version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
@@ -25,7 +25,7 @@ jobs:
           min-version: "1.17"
 
   test-output-method-load:
-    name: Build Maxtrix for min-version=3
+    name: min-version=1.17
     needs: test-output-method-setup
     runs-on: ubuntu-latest
     strategy:
@@ -38,7 +38,7 @@ jobs:
           go-version: ${{ matrix.version-matrix }}
 
   test-output-method-setup-eol:
-    name: Set min-version=EOL
+    name: min-version=EOL
     runs-on: ubuntu-latest
     outputs:
       version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
@@ -52,7 +52,7 @@ jobs:
           language: go
 
   test-output-method-load-eol:
-    name: Build Maxtrix for min-version=EOL
+    name: min-version=EOL
     needs: test-output-method-setup-eol
     runs-on: ubuntu-latest
     strategy:
@@ -65,7 +65,7 @@ jobs:
           go-version: ${{ matrix.version-matrix }}
 
   test-output-method-setup-highest-only:
-    name: Highest version only
+    name: Test highest only
     runs-on: ubuntu-latest
     outputs:
       highest-version: ${{ steps.get-versions.outputs.latest-versions }}
