@@ -87,6 +87,11 @@ def get_minimum_version_from_oel(language: str) -> str:
 
     future: datetime.date = datetime.date.today() + datetime.timedelta(3650)
     for release in requests.get(versions_url, timeout=REQUESTS_TIMEOUT).json():
+        try:
+            semver.parse(release['cycle'])
+        except semver.InvalidVersion:
+            continue
+
         if release['eol'] is True:
             continue
         if release['eol'] is False:
@@ -140,6 +145,33 @@ def get_stable_versions(language: str) -> list:
     return requests.get(versions_url, timeout=REQUESTS_TIMEOUT).json()
 
 
+def compare_min_max_value(versions_dict: dict, version: str, min_version: str, max_version: str) -> dict:
+    """
+    Compare version against min and max.
+
+    Compare the current version against the min and max to see if it within the range we want.
+
+    Arguments:
+        versions_dict (dict) -- The dictionary of valid versions.
+        version (str) -- The current version we are comparing.
+        min_version (str) -- The minimum defined version.
+        max_version (str) -- The maximum defined version.
+
+    Returns:
+        dict -- The updated versions dictionary.
+    """
+    major_minor: semver.Version = semver.parse('.'.join(version.split('.')[:2]))
+
+    if min_version <= major_minor <= max_version:
+        if major_minor in versions_dict:
+            if semver.parse(versions_dict[major_minor]) < semver.parse(version):
+                versions_dict[major_minor] = version
+        else:
+            versions_dict[major_minor] = version
+
+    return versions_dict
+
+
 def process_versions(stable_versions: list, min_version: str, max_version: str, parsed_include_prereleases: bool) -> list:
     """
     Process the list of versions.
@@ -158,16 +190,15 @@ def process_versions(stable_versions: list, min_version: str, max_version: str, 
     versions_dict: dict = {}
 
     for version in stable_versions:
+        try:
+            semver.parse(version)
+        except semver.InvalidVersion:
+            continue
+
         if not parsed_include_prereleases and semver.parse(version).is_prerelease:
             continue
 
-        major_minor: semver.Version = semver.parse('.'.join(version.split('.')[:2]))
-        if min_version <= major_minor <= max_version:
-            if major_minor in versions_dict:
-                if semver.parse(versions_dict[major_minor]) < semver.parse(version):
-                    versions_dict[major_minor] = version
-            else:
-                versions_dict[major_minor] = version
+        versions_dict = compare_min_max_value(versions_dict, version, min_version, max_version)
 
     versions: list = list(versions_dict.values())
     versions = sorted(versions, key=lambda x: [int(i) if i.isdigit() else i for i in x.split('.')])
@@ -191,8 +222,11 @@ def get_versions(stable_versions: dict) -> list:
     for version_object in stable_versions:
         version: str = version_object['version']
 
-        if semver.parse(version):
-            versions.append(version)
+        try:
+            if semver.parse(version):
+                versions.append(version)
+        except semver.InvalidVersion:
+            continue
 
     return versions
 
@@ -214,8 +248,11 @@ def get_php_versions(stable_versions: dict) -> list:
     for version_object in stable_versions:
         version: str = f"{version_object['major']}.{version_object['minor']}.{version_object['release']}"
 
-        if semver.parse(version):
-            versions.append(version)
+        try:
+            if semver.parse(version):
+                versions.append(version)
+        except semver.InvalidVersion:
+            continue
 
     return versions
 
@@ -235,8 +272,11 @@ def get_ruby_versions(stable_versions: dict) -> list:
     versions: list = []
 
     for version in stable_versions["ruby"]:
-        if semver.parse(version):
-            versions.append(version)
+        try:
+            if semver.parse(version):
+                versions.append(version)
+        except semver.InvalidVersion:
+            continue
 
     return versions
 
