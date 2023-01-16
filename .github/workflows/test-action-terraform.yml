@@ -16,7 +16,7 @@ jobs:
       version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: hashicorp/setup-terraform@v2
+        uses: actions/checkout@v3
       - name: Get versions
         uses: ./
         id: get-versions
