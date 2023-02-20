@@ -110,7 +110,7 @@ jobs:
     needs: test-output-method-setup-highest-only-strip-patch
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Ruby ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
+      - name: Setup Ruby ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
+          ruby-version: ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}
