@@ -98,6 +98,7 @@ jobs:
       - bandit
       - pydocstyle
       - pycodestyle
+      - pylama
       - pylint
     runs-on: ubuntu-latest
     steps:
