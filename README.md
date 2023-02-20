@@ -56,10 +56,11 @@ To use the action, simply throw this into one of your workflows
   id: get-versions
   with:
     language: "python"
-    min-version: 3.7           # not required - defaults to "EOL"
-    max-version: 3.10          # not required - defaults to latest
-    include-prereleases: true  # not required - defaults to false
-    highest-only: true         # not required - defaults to false
+    min-version: 3.7            # not required - defaults to "EOL"
+    max-version: 3.10           # not required - defaults to latest
+    include-prereleases: true   # not required - defaults to false
+    highest-only: true          # not required - defaults to false
+    remove-patch-version: true  # not required - defaults to false
 ```
 
 The action produces an `output` that can be accessed using:
@@ -70,13 +71,14 @@ ${{ steps.get-versions.outputs.latest-versions }}
 
 ## All Parameters
 
-| Parameters          | Required | Default  | Options                                   |
-| ------------------- |:--------:| -------- | ----------------------------------------- |
-| language            | Yes      |          | Go, Node, PHP, Python, Ruby or Terraform. |
-| min-version         | No       | "EOL"    | semver, "EOL" or "ALL"                    |
-| max-version         | No       | "latest" | semver or "latest"                        |
-| include-prereleases | No       | false    | true or false                             |
-| highest-only        | No       | false    | true or false                             |
+| Parameters           | Required | Default  | Options                                   |
+| -------------------- |:--------:| -------- | ----------------------------------------- |
+| language             | Yes      |          | Go, Node, PHP, Python, Ruby or Terraform. |
+| min-version          | No       | "EOL"    | semver, "EOL" or "ALL"                    |
+| max-version          | No       | "latest" | semver or "latest"                        |
+| include-prereleases  | No       | false    | true or false                             |
+| highest-only         | No       | false    | true or false                             |
+| remove-patch-version | No       | false    | true or false                             |
 
 See examples below for recommended usage.
 

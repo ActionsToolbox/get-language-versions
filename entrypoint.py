@@ -180,7 +180,7 @@ def compare_min_max_value(versions_dict: dict, version: str, min_version: str, m
     return versions_dict
 
 
-def process_versions(stable_versions: list, min_version: str, max_version: str, parsed_include_prereleases: bool) -> list:
+def process_versions(stable_versions: list, min_version: str, max_version: str, include_prereleases: bool, remove_patch_version: bool) -> list:
     """
     Process the list of versions.
 
@@ -203,8 +203,11 @@ def process_versions(stable_versions: list, min_version: str, max_version: str, 
         except semver.InvalidVersion:
             continue
 
-        if not parsed_include_prereleases and semver.parse(version).is_prerelease:
+        if not include_prereleases and semver.parse(version).is_prerelease:
             continue
+
+        if remove_patch_version:
+            version: str = '.'.join(version.split('.')[:2])
 
         versions_dict = compare_min_max_value(versions_dict, version, min_version, max_version)
 
@@ -336,7 +339,12 @@ def output_version_details(versions: list | str) -> None:
     print(versions)
 
 
-def main(language: str, min_version: str = 'EOL', max_version: str = 'LATEST', include_prereleases: str = 'false', highest_only: str = 'false') -> None:
+def main(language: str,
+         min_version: str = 'EOL',
+         max_version: str = 'LATEST',
+         include_prereleases: str = 'false',
+         highest_only: str = 'false',
+         remove_patch_version: str = 'false') -> None:
     """
     Handle input from Docker container.
 
@@ -351,6 +359,7 @@ def main(language: str, min_version: str = 'EOL', max_version: str = 'LATEST', i
         max_version (str) -- The maximum version to use (default: 'LATEST')
         include_prereleases (str) -- Should we include pre-release versions? (default: 'false')
         highest_only (str) -- Should we return only the highest version instead of all? (default: 'false')
+        remove_patch_version (str) -- Should we return only the major.minor version instead of the full version? (default: 'false')
     """
     version_json: list = []
 
@@ -360,8 +369,13 @@ def main(language: str, min_version: str = 'EOL', max_version: str = 'LATEST', i
 
     min_version: str = get_minimum_version(min_version, language)
     max_version: str = semver.parse(max_version) if max_version.upper() != 'LATEST' else MAX_VERSION
-    parsed_include_prereleases: bool = strtobool(include_prereleases)
+    include_prereleases: bool = strtobool(include_prereleases)
     output_highest_only: bool = strtobool(highest_only)
+    remove_patch_version: bool = strtobool(remove_patch_version)
+
+    if remove_patch_version and include_prereleases:
+        print("You cannot combine include_prereleases with remove_patch")
+        sys.exit(1)
 
     if language.upper() == "TERRAFORM":
         stable_versions: list = get_stable_versions(language, False)
@@ -377,7 +391,7 @@ def main(language: str, min_version: str = 'EOL', max_version: str = 'LATEST', i
     else:
         versions = get_versions(stable_versions)
 
-    versions = process_versions(versions, min_version, max_version, parsed_include_prereleases)
+    versions = process_versions(versions, min_version, max_version, include_prereleases, remove_patch_version)
 
     if output_highest_only:
         version_json = versions[-1]
