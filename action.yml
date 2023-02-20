@@ -23,6 +23,11 @@ inputs:
     description: 'Whether to get the highest version only or all versions as a matrix.'
     required: false
     default: 'false'
+  remove-patch-version:
+    description: 'Whether to remove the patch version from the version string or not.'
+    required: false
+    default: 'false'
+
 outputs:
   latest-versions:
     description: 'Version or List of versions that can be loaded as a matrix with fromJson'
@@ -35,3 +40,4 @@ runs:
     - ${{ inputs.max-version }}
     - ${{ inputs.include-prereleases }}
     - ${{ inputs.highest-only }}
+    - ${{ inputs.remove-patch-version }}

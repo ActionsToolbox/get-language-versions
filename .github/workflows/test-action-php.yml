@@ -64,6 +64,7 @@ jobs:
         with:
           php-version: ${{ matrix.version-matrix }}
 
+
   test-output-method-setup-highest-only:
     name: Highest version only
     runs-on: ubuntu-latest
@@ -88,3 +89,29 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+
+  test-output-method-setup-highest-only-patch-only:
+    name: Highest version only (Patch Only)
+    runs-on: ubuntu-latest
+    outputs:
+      highest-version: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: php
+          highest-only: true
+          remove-patch-version: true
+
+  test-output-method-load-highest-only-patch-only:
+    name: Build for highest version only (Patch Only)
+    needs: test-output-method-setup-highest-only-patch-only
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup PHP ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}

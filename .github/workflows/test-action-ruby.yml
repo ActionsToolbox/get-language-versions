@@ -88,3 +88,29 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+
+  test-output-method-setup-highest-only-strip-patch:
+    name: Highest version only (Strip Patch)
+    runs-on: ubuntu-latest
+    outputs:
+      highest-version: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: ruby
+          highest-only: true
+          remove-patch-version: true
+
+  test-output-method-load-highest-only-strip-patch:
+    name: Build for highest version only (Strip Patch)
+    needs: test-output-method-setup-highest-only-strip-patch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Ruby ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}
