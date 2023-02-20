@@ -52,7 +52,7 @@ jobs:
           language: python
 
   test-output-method-load-eol:
-    name: Build Maxtrix for min-version=EOL
+    name: Build Matrix for min-version=EOL
     needs: test-output-method-setup-eol
     runs-on: ubuntu-latest
     strategy:
@@ -81,6 +81,32 @@ jobs:
 
   test-output-method-load-highest-only:
     name: Build for highest version only
+    needs: test-output-method-setup-highest-only
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+
+  test-output-method-setup-highest-only-strip-patch:
+    name: Highest version only (Strip Patch)
+    runs-on: ubuntu-latest
+    outputs:
+      highest-version: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: python
+          highest-only: true
+          remove-patch-version: true
+
+  test-output-method-load-highest-only-strip-patch:
+    name: Build for highest version only (Strip Patch)
     needs: test-output-method-setup-highest-only
     runs-on: ubuntu-latest
     steps:
