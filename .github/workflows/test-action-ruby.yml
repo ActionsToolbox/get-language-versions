@@ -107,7 +107,7 @@ jobs:
 
   test-output-method-load-highest-only-strip-patch:
     name: Build for highest version only (Strip Patch)
-    needs: test-output-method-setup-highest-only-patch-only
+    needs: test-output-method-setup-highest-only-strip-patch
     runs-on: ubuntu-latest
     steps:
       - name: Setup Ruby ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
