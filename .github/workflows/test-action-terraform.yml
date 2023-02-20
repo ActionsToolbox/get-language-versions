@@ -88,3 +88,29 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+
+  test-output-method-setup-highest-only-strip-patch:
+    name: Highest version only (Strip Patch)
+    runs-on: ubuntu-latest
+    outputs:
+      highest-version: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: terraform
+          highest-only: true
+          remove-patch-version: true
+
+  test-output-method-load-highest-only-strip-patch:
+    name: Build for highest version only (Strip Patch)
+    needs: test-output-method-setup-highest-only-strip-patch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Terraform ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}

@@ -107,10 +107,10 @@ jobs:
 
   test-output-method-load-highest-only-strip-patch:
     name: Build for highest version only (Strip Patch)
-    needs: test-output-method-setup-highest-only
+    needs: test-output-method-setup-highest-only-strip-patch
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Python ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+      - name: Setup Python ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+          python-version: ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}
