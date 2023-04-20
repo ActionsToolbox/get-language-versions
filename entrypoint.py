@@ -8,9 +8,11 @@ It currently supports the following languages:
 
 1. Go
 2. Node / NodeJS
-3. PHP
-4. Python
-5. Ruby
+3. Perl
+4. PHP
+5. Python
+6. Ruby
+7. Terraform
 """
 import datetime
 import json
@@ -38,6 +40,10 @@ URLS: dict[str, dict[str, str]] = {
     "nodejs": {
         "versions_url": 'https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json',
         "eol_url": 'https://endoflife.date/api/nodejs.json'
+    },
+    "perl": {
+        "versions_url": 'https://raw.githubusercontent.com/shogo82148/actions-setup-perl/main/versions/linux.json',
+        "eol_url": 'https://endoflife.date/api/perl.json'
     },
     "php": {
         "versions_url": 'https://phpreleases.com/api/releases/',
@@ -242,6 +248,30 @@ def get_versions(stable_versions: dict) -> list:
     return versions
 
 
+def get_perl_versions(stable_versions: dict) -> list:
+    """
+    Get versions from returned dataset.
+
+    Different version urls return the version data in different formats, this handles the data for Ruby only.
+
+    Arguments:
+        stable_versions (dict) -- The dataset returned from the versions-url.
+
+    Returns:
+        list -- A list containing JUST the version numbers.
+    """
+    versions: list = []
+
+    for version in stable_versions:
+        try:
+            if semver.Version(version):
+                versions.append(version)
+        except semver.InvalidVersion:
+            continue
+
+    return versions
+
+
 def get_php_versions(stable_versions: dict) -> list:
     """
     Get versions from returned dataset.
@@ -382,7 +412,9 @@ def main(language: str,
     else:
         stable_versions: list = get_stable_versions(language)
 
-    if language.upper() == "PHP":
+    if language.upper() == "PERL":
+        versions: list = get_perl_versions(stable_versions)
+    elif language.upper() == "PHP":
         versions: list = get_php_versions(stable_versions)
     elif language.upper() == "RUBY":
         versions = get_ruby_versions(stable_versions)
