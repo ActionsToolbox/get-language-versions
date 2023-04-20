@@ -1,0 +1,117 @@
+name: Test action (Perl)
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  test-output-method-setup:
+    name: min-version=5.34
+    runs-on: ubuntu-latest
+    outputs:
+      version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: perl
+          min-version: "5.34"
+
+  test-output-method-load:
+    name: min-version=5.34
+    needs: test-output-method-setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version-matrix: ${{fromJson(needs.test-output-method-setup.outputs.version-matrix)}}
+    steps:
+      - name: Setup Perl ${{ matrix.version-matrix }}
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.version-matrix }}
+
+  test-output-method-setup-eol:
+    name: min-version=EOL
+    runs-on: ubuntu-latest
+    outputs:
+      version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: perl
+
+  test-output-method-load-eol:
+    name: min-version=EOL
+    needs: test-output-method-setup-eol
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version-matrix: ${{fromJson(needs.test-output-method-setup-eol.outputs.version-matrix)}}
+    steps:
+      - name: Setup Perl ${{ matrix.version-matrix }}
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.version-matrix }}
+
+
+  test-output-method-setup-highest-only:
+    name: Highest version only
+    runs-on: ubuntu-latest
+    outputs:
+      highest-version: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: perl
+          highest-only: true
+
+  test-output-method-load-highest-only:
+    name: Build for highest version only
+    needs: test-output-method-setup-highest-only
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Perl ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
+
+  test-output-method-setup-highest-only-patch-only:
+    name: Highest version only (Patch Only)
+    runs-on: ubuntu-latest
+    outputs:
+      highest-version: ${{ steps.get-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Get versions
+        uses: ./
+        id: get-versions
+        with:
+          language: perl
+          highest-only: true
+          remove-patch-version: true
+
+  test-output-method-load-highest-only-patch-only:
+    name: Build for highest version only (Patch Only)
+    needs: test-output-method-setup-highest-only-patch-only
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Perl ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          php-version: ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}

@@ -39,6 +39,7 @@ This action will fetch up-to-date data on the latest version(s) available on Git
 | ------------- |:---------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------:|
 | Go            | [setup-go](https://github.com/actions/setup-go)                 | [go-versions](https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json)         |
 | Node / NodeJS | [setup-node](https://github.com/actions/setup-node)             | [node-versions](https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json)     |
+| Perl          | [setup-perl](https://github.com/shogo82148/actions-setup-perl)  | [perl-versions](https://raw.githubusercontent.com/shogo82148/actions-setup-perl/main/versions/linux.json)                                                    |
 | PHP           | [setup-php](https://github.com/shivammathur/setup-php)          | [php-versions](https://phpreleases.com/api/releases/)                                                    |
 | Python        | [setup-python](https://github.com/actions/setup-python)         | [python-versions](https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json) |
 | Ruby          | [setup-ruby](https://github.com/ruby/setup-ruby)                | [ruby-versions](https://raw.githubusercontent.com/ruby/setup-ruby/master/ruby-builder-versions.json)     |
@@ -71,14 +72,14 @@ ${{ steps.get-versions.outputs.latest-versions }}
 
 ## All Parameters
 
-| Parameters           | Required | Default  | Options                                   |
-| -------------------- |:--------:| -------- | ----------------------------------------- |
-| language             | Yes      |          | Go, Node, PHP, Python, Ruby or Terraform. |
-| min-version          | No       | "EOL"    | semver, "EOL" or "ALL"                    |
-| max-version          | No       | "latest" | semver or "latest"                        |
-| include-prereleases  | No       | false    | true or false                             |
-| highest-only         | No       | false    | true or false                             |
-| remove-patch-version | No       | false    | true or false                             |
+| Parameters           | Required | Default  | Options                                         |
+| -------------------- |:--------:| -------- | ----------------------------------------------- |
+| language             | Yes      |          | Go, Node, Perl, PHP, Python, Ruby or Terraform. |
+| min-version          | No       | "EOL"    | semver, "EOL" or "ALL"                          |
+| max-version          | No       | "latest" | semver or "latest"                              |
+| include-prereleases  | No       | false    | true or false                                   |
+| highest-only         | No       | false    | true or false                                   |
+| remove-patch-version | No       | false    | true or false                                   |
 
 See examples below for recommended usage.
 
