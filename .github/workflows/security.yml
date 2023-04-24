@@ -1,33 +1,28 @@
-name: Greetings
+name: Security Hardening
 
-on: [pull_request_target, issues]
+on: push
 
 env:
-  SLACK_NOTIFY: false
+  SLACK_NOTIFY: true
 
 # Declare default permissions as read only.
 permissions: read-all
 
 jobs:
-  greeting:
-    name: Handle Greetings
+  harden_security:
+    name: Harden Security
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      pull-requests: write
     steps:
-    - name: Handle greetings
-      uses: actions/first-interaction@1d8459ca65b335265f1285568221e229d45a995e # v1.1.1
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        issue-message: "Thank you for raising your first issue - all contributions to this project are welcome!"
-        pr-message: "Thank you for raising your first pull request - all contributions to this project are welcome!"
+      - name: Checkout code
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - name: Ensure SHA pinned actions
+        uses: zgosalvez/github-actions-ensure-sha-pinned-actions@bd2868d14a756969608c618665394415a238de69 # v2.0.5 
 
   slack-workflow-status:
     if: always()
     name: Slack Post Workflow Notification
     needs:
-      - greeting
+      - harden_security
     runs-on: ubuntu-latest
     steps:
       - name: Slack Workflow Notifications

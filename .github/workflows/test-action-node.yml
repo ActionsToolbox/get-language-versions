@@ -8,6 +8,9 @@ on:
     branches:
       - '**'
 
+env:
+  SLACK_NOTIFY: true
+
 jobs:
   test-output-method-setup:
     name: min-version=18
@@ -16,7 +19,7 @@ jobs:
       version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -33,7 +36,7 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup.outputs.version-matrix)}}
     steps:
       - name: Setup Node ${{ matrix.version-matrix }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: ${{ matrix.version-matrix }}
 
@@ -44,7 +47,7 @@ jobs:
       version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -60,7 +63,7 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup-eol.outputs.version-matrix)}}
     steps:
       - name: Setup Node ${{ matrix.version-matrix }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: ${{ matrix.version-matrix }}
 
@@ -71,7 +74,7 @@ jobs:
       highest-version: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -85,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Node ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
 
@@ -96,7 +99,7 @@ jobs:
       highest-version: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -111,6 +114,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Node ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}
+
+  slack-workflow-status:
+    if: always()
+    name: Slack Post Workflow Notification
+    needs:
+      - test-output-method-load
+      - test-output-method-load-eol
+      - test-output-method-load-highest-only
+      - test-output-method-load-highest-only-strip-patch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack Workflow Notifications
+        if: ${{ env.SLACK_NOTIFY == 'true' && github.event_name == 'push' }}
+        uses: Gamesight/slack-workflow-status@26a36836c887f260477432e4314ec3490a84f309 # v1.2.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          include_jobs: on-failure
+          include_commit_message: true

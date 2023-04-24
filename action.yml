@@ -27,6 +27,10 @@ inputs:
     description: 'Whether to remove the patch version from the version string or not.'
     required: false
     default: 'false'
+  use-head:
+    description: 'Use the head of main/master instead of the latest released version'
+    required: false
+    default: 'false'
 
 outputs:
   latest-versions:
@@ -41,3 +45,4 @@ runs:
     - ${{ inputs.include-prereleases }}
     - ${{ inputs.highest-only }}
     - ${{ inputs.remove-patch-version }}
+    - ${{ inputs.use-head }}
