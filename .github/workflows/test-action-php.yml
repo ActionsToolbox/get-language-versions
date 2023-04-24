@@ -8,6 +8,9 @@ on:
     branches:
       - '**'
 
+env:
+  SLACK_NOTIFY: true
+
 jobs:
   test-output-method-setup:
     name: min-version=7.3
@@ -16,7 +19,7 @@ jobs:
       version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -33,7 +36,7 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup.outputs.version-matrix)}}
     steps:
       - name: Setup PHP ${{ matrix.version-matrix }}
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@cb8f453143149404c7fd670b5f37c91d395b3054 # 2.25.1
         with:
           php-version: ${{ matrix.version-matrix }}
 
@@ -44,7 +47,7 @@ jobs:
       version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -60,7 +63,7 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup-eol.outputs.version-matrix)}}
     steps:
       - name: Setup PHP ${{ matrix.version-matrix }}
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@cb8f453143149404c7fd670b5f37c91d395b3054 # 2.25.1
         with:
           php-version: ${{ matrix.version-matrix }}
 
@@ -72,7 +75,7 @@ jobs:
       highest-version: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -86,7 +89,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup PHP ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@cb8f453143149404c7fd670b5f37c91d395b3054 # 2.25.1
         with:
           php-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
 
@@ -97,7 +100,7 @@ jobs:
       highest-version: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -112,6 +115,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup PHP ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@cb8f453143149404c7fd670b5f37c91d395b3054 # 2.25.1
         with:
           php-version: ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
+
+  slack-workflow-status:
+    if: always()
+    name: Slack Post Workflow Notification
+    needs:
+      - test-output-method-load
+      - test-output-method-load-eol
+      - test-output-method-load-highest-only
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack Workflow Notifications
+        if: ${{ env.SLACK_NOTIFY == 'true' && github.event_name == 'push' }}
+        uses: Gamesight/slack-workflow-status@26a36836c887f260477432e4314ec3490a84f309 # v1.2.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          include_jobs: on-failure
+          include_commit_message: true

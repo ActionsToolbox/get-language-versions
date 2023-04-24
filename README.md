@@ -1,3 +1,4 @@
+<!-- markdownlint-disable -->
 <p align="center">
     <a href="https://github.com/ActionsToolbox/">
         <img src="https://cdn.wolfsoftware.com/assets/images/github/organisations/actionstoolbox/black-and-white-circle-256.png" alt="ActionsToolbox logo" />
@@ -33,7 +34,11 @@ This action was inspired by [latest-python-versions](https://github.com/snok/lat
 
 # Latest Language Version(s)
 
-This action will fetch up-to-date data on the latest version(s) available on Github Actions for a given set of languages.
+This action will fetch up-to-date data on the latest version(s) available on Github Actions for a given set of languages. It does this by first identifying the latest release (if the version source is in GitHub), and then extracting the information from the versions file of that latest release.
+
+The reason behind this, if that most people will pin their action to the latest release instead of main or master, but developers can push new code into master which causes the action to fail.
+
+If you wish to continue using the head of main or master, then we have added a new option 'use-head' which will do this instead.
 
 | Language      | GitHub Action                                                   | Version Source                                                                                           |
 | ------------- |:---------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------:|
@@ -80,6 +85,7 @@ ${{ steps.get-versions.outputs.latest-versions }}
 | include-prereleases  | No       | false    | true or false                                   |
 | highest-only         | No       | false    | true or false                                   |
 | remove-patch-version | No       | false    | true or false                                   |
+| use-head             | No       | false    | true or false
 
 See examples below for recommended usage.
 
@@ -161,4 +167,4 @@ jobs:
 
 
 <br />
-<p align="right"><a href="https://wolfsoftware.com/"><img src="https://img.shields.io/badge/Created%20by%20Wolf%20Software-blue?style=for-the-badge" /></a></p>
+<p align="right"><a href="https://wolfsoftware.com/"><img src="https://img.shields.io/badge/Created%20by%20Wolf%20on%20behalf%20of%20Wolf%20Software-blue?style=for-the-badge" /></a></p>

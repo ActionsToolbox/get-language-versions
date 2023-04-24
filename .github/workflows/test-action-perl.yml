@@ -8,6 +8,9 @@ on:
     branches:
       - '**'
 
+env:
+  SLACK_NOTIFY: true
+
 jobs:
   test-output-method-setup:
     name: min-version=5.34
@@ -16,7 +19,7 @@ jobs:
       version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -33,7 +36,7 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup.outputs.version-matrix)}}
     steps:
       - name: Setup Perl ${{ matrix.version-matrix }}
-        uses: shogo82148/actions-setup-perl@v1
+        uses: shogo82148/actions-setup-perl@795ea77474d1f81da5b0a04028a5b94d4118a9c2 # v1.20.2
         with:
           perl-version: ${{ matrix.version-matrix }}
 
@@ -44,7 +47,7 @@ jobs:
       version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -60,10 +63,9 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup-eol.outputs.version-matrix)}}
     steps:
       - name: Setup Perl ${{ matrix.version-matrix }}
-        uses: shogo82148/actions-setup-perl@v1
+        uses: shogo82148/actions-setup-perl@795ea77474d1f81da5b0a04028a5b94d4118a9c2 # v1.20.2
         with:
           perl-version: ${{ matrix.version-matrix }}
-
 
   test-output-method-setup-highest-only:
     name: Highest version only
@@ -72,7 +74,7 @@ jobs:
       highest-version: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -86,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Perl ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
-        uses: shogo82148/actions-setup-perl@v1
+        uses: shogo82148/actions-setup-perl@795ea77474d1f81da5b0a04028a5b94d4118a9c2 # v1.20.2
         with:
           perl-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
 
@@ -97,7 +99,7 @@ jobs:
       highest-version: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -112,6 +114,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Perl ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
-        uses: shogo82148/actions-setup-perl@v1
+        uses: shogo82148/actions-setup-perl@795ea77474d1f81da5b0a04028a5b94d4118a9c2 # v1.20.2
         with:
-          php-version: ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
+          perl-version: ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
+
+  slack-workflow-status:
+    if: always()
+    name: Slack Post Workflow Notification
+    needs:
+      - test-output-method-load
+      - test-output-method-load-eol
+      - test-output-method-load-highest-only
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack Workflow Notifications
+        if: ${{ env.SLACK_NOTIFY == 'true' && github.event_name == 'push' }}
+        uses: Gamesight/slack-workflow-status@26a36836c887f260477432e4314ec3490a84f309 # v1.2.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          include_jobs: on-failure
+          include_commit_message: true

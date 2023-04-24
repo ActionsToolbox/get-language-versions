@@ -24,25 +24,35 @@ from packaging import version as semver
 
 from bs4 import BeautifulSoup
 
+# pylint: disable=too-many-arguments
+
 REQUESTS_TIMEOUT: int = 5
 MAX_VERSION: semver.Version = semver.parse('99999')
 MIN_VERSION: semver.Version = semver.parse('0')
 
 URLS: dict[str, dict[str, str]] = {
     "go": {
-        "versions_url": 'https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json',
+        "releases_url": 'https://github.com/actions/go-versions/releases/latest/',
+        "head_branch": 'main',
+        "versions_url": 'https://raw.githubusercontent.com/actions/go-versions/LATEST_TAG/versions-manifest.json',
         "eol_url": 'https://endoflife.date/api/go.json'
     },
     "node": {
-        "versions_url": 'https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json',
+        "releases_url": 'https://github.com/actions/node-versions/releases/latest/',
+        "head_branch": 'main',
+        "versions_url": 'https://raw.githubusercontent.com/actions/node-versions/LATEST_TAG/versions-manifest.json',
         "eol_url": 'https://endoflife.date/api/nodejs.json'
     },
     "nodejs": {
-        "versions_url": 'https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json',
+        "releases_url": 'https://github.com/actions/node-versions/releases/latest/',
+        "head_branch": 'main',
+        "versions_url": 'https://raw.githubusercontent.com/actions/node-versions/LATEST_TAG/versions-manifest.json',
         "eol_url": 'https://endoflife.date/api/nodejs.json'
     },
     "perl": {
-        "versions_url": 'https://raw.githubusercontent.com/shogo82148/actions-setup-perl/main/versions/linux.json',
+        "releases_url": 'https://github.com/shogo82148/actions-setup-perl/releases/latest/',
+        "head_branch": 'main',
+        "versions_url": 'https://raw.githubusercontent.com/shogo82148/actions-setup-perl/LATEST_TAG/versions/linux.json',
         "eol_url": 'https://endoflife.date/api/perl.json'
     },
     "php": {
@@ -50,11 +60,15 @@ URLS: dict[str, dict[str, str]] = {
         "eol_url": 'https://endoflife.date/api/php.json'
     },
     "python": {
-        "versions_url": 'https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json',
+        "releases_url": 'https://github.com/actions/python-versions/releases/latest/',
+        "head_branch": 'main',
+        "versions_url": 'https://raw.githubusercontent.com/actions/python-versions/LATEST_TAG/versions-manifest.json',
         "eol_url": 'https://endoflife.date/api/python.json'
     },
     "ruby": {
-        "versions_url": 'https://raw.githubusercontent.com/ruby/setup-ruby/master/ruby-builder-versions.json',
+        "releases_url": 'https://github.com/ruby/setup-ruby/releases/latest/',
+        "head_branch": 'master',
+        "versions_url": 'https://raw.githubusercontent.com/ruby/setup-ruby/LATEST_TAG/ruby-builder-versions.json',
         "eol_url": 'https://endoflife.date/api/ruby.json'
     },
     "terraform": {
@@ -140,7 +154,25 @@ def get_minimum_version(min_version: str, language: str) -> str:
     return min_version
 
 
-def get_stable_versions(language: str, return_json: bool = True) -> list:
+def get_latest_tag(releases_url: str) -> str:
+    """
+    Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        releases_url (str) -- _description_
+
+    Returns:
+        str -- _description_
+    """
+    response: requests.models.Response = requests.get(releases_url, timeout=10)
+    version: str = response.url.split('/')[-1]
+
+    return version
+
+
+def get_stable_versions(language: str, use_head: bool, return_json: bool = True) -> list:
     """
     Get a list of stable versions.
 
@@ -153,6 +185,13 @@ def get_stable_versions(language: str, return_json: bool = True) -> list:
         list -- The list of stable (supported) versions available.
     """
     versions_url: str = URLS[language]["versions_url"]
+
+    if use_head is True:
+        head_branch: str = URLS[language]["head_branch"]
+        versions_url = versions_url.replace('LATEST_TAG', head_branch)
+    elif "releases_url" in URLS[language]:
+        latest_tag: str = get_latest_tag(URLS[language]["releases_url"])
+        versions_url = versions_url.replace('LATEST_TAG', latest_tag)
 
     if return_json is True:
         return requests.get(versions_url, timeout=REQUESTS_TIMEOUT).json()
@@ -374,7 +413,8 @@ def main(language: str,
          max_version: str = 'LATEST',
          include_prereleases: str = 'false',
          highest_only: str = 'false',
-         remove_patch_version: str = 'false') -> None:
+         remove_patch_version: str = 'false',
+         use_head: str = 'false') -> None:
     """
     Handle input from Docker container.
 
@@ -390,6 +430,7 @@ def main(language: str,
         include_prereleases (str) -- Should we include pre-release versions? (default: 'false')
         highest_only (str) -- Should we return only the highest version instead of all? (default: 'false')
         remove_patch_version (str) -- Should we return only the major.minor version instead of the full version? (default: 'false')
+        use_head (str) - Should we use the latest commit to master instead of the latest release? (default: 'false')
     """
     version_json: list = []
 
@@ -400,17 +441,18 @@ def main(language: str,
     min_version: str = get_minimum_version(min_version, language)
     max_version: str = semver.parse(max_version) if max_version.upper() != 'LATEST' else MAX_VERSION
     include_prereleases: bool = strtobool(include_prereleases)
-    output_highest_only: bool = strtobool(highest_only)
+    highest_only: bool = strtobool(highest_only)
     remove_patch_version: bool = strtobool(remove_patch_version)
+    use_head: bool = strtobool(use_head)
 
     if remove_patch_version and include_prereleases:
         print("You cannot combine include_prereleases with remove_patch")
         sys.exit(1)
 
     if language.upper() == "TERRAFORM":
-        stable_versions: list = get_stable_versions(language, False)
+        stable_versions: list = get_stable_versions(language, use_head, False)
     else:
-        stable_versions: list = get_stable_versions(language)
+        stable_versions: list = get_stable_versions(language, use_head)
 
     if language.upper() == "PERL":
         versions: list = get_perl_versions(stable_versions)
@@ -425,7 +467,7 @@ def main(language: str,
 
     versions = process_versions(versions, min_version, max_version, include_prereleases, remove_patch_version)
 
-    if output_highest_only:
+    if highest_only:
         version_json = versions[-1]
     else:
         version_json = json.dumps(versions)

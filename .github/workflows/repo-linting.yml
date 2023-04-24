@@ -1,9 +1,5 @@
 name: Repository Linting
 
-#
-# This is a shared workflow used by ALL projects and is auto-generated.
-#
-
 on:
   push:
     branches:
@@ -15,30 +11,63 @@ on:
 env:
   SLACK_NOTIFY: true
 
+# Declare default permissions as read only.
+permissions: read-all
+
 jobs:
+  get-go-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-language-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: ./
+        id: get-language-versions
+        with:
+          language: "go"
+          highest-only: true
+          remove-patch-version: true
+
   actionlint:
     name: Action Lint
+    needs: get-go-version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
-      - name: Setup Go 1.19
-        uses: actions/setup-go@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - name: Setup Go ${{ needs.get-go-version.outputs.version }}
+        uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
         with:
-          go-version: '1.19'
+          go-version: ${{ needs.get-go-version.outputs.version }}
       - name: Run Action Lint
         run: bash <(curl -s https://raw.githubusercontent.com/CICDToolbox/action-lint/master/pipeline.sh)
 
+  get-ruby-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-language-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: ./
+        id: get-language-versions
+        with:
+          language: "ruby"
+          highest-only: true
+          remove-patch-version: true
+
   awesomebot:
     name: Awesomebot
+    needs: get-ruby-version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
-      - name: Set up Ruby 3.1
-        uses: ruby/setup-ruby@v1
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - name: Set up Ruby ${{ needs.get-ruby-version.outputs.version }}
+        uses: ruby/setup-ruby@55283cc23133118229fd3f97f9336ee23a179fcf # v1.146.0
         with:
-          ruby-version: '3.1'
+          ruby-version: ${{ needs.get-ruby-version.outputs.version }}
       - name: Run Awesomebot
         env:
           FLAGS: "default"
@@ -46,31 +75,61 @@ jobs:
           WHITELIST: "https://img.shields.io"
         run: bash <(curl -s https://raw.githubusercontent.com/CICDToolbox/awesomebot/master/pipeline.sh)
 
+  get-node-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-language-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: ./
+        id: get-language-versions
+        with:
+          language: "node"
+          highest-only: true
+          remove-patch-version: true
+
   markdown-lint:
     name: Markdown Lint
+    needs: get-node-version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
-      - name: Setup node 16
-        uses: actions/setup-node@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - name: Setup node ${{ needs.get-node-version.outputs.version }}
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
-          node-version: '16'
+          node-version: ${{ needs.get-node-version.outputs.version }}
       - name: Run Markdown Lint
         run: bash <(curl -s https://raw.githubusercontent.com/CICDToolbox/markdown-lint/master/pipeline.sh)
         env:
           EXCLUDE_FILES: "README.md"
 
+  get-python-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-language-versions.outputs.latest-versions }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: ./
+        id: get-language-versions
+        with:
+          language: "python"
+          highest-only: true
+          remove-patch-version: true
+
   yaml-lint:
     name: YAML Lint
+    needs: get-python-version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - name: Set up Python ${{ needs.get-python-version.outputs.version }}
+        uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435 # v4.5.0
         with:
-          python-version: '3.10'
+          python-version: ${{ needs.get-python-version.outputs.version }}
       - name: Run YAML-Lint
         env:
           EXCLUDE_FILES: ".github/workflows"
@@ -88,7 +147,7 @@ jobs:
     steps:
       - name: Slack Workflow Notifications
         if: ${{ env.SLACK_NOTIFY == 'true' && github.event_name == 'push' }}
-        uses: Gamesight/slack-workflow-status@v1.2.0
+        uses: Gamesight/slack-workflow-status@26a36836c887f260477432e4314ec3490a84f309 # v1.2.0
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
