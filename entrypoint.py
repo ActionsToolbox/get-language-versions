@@ -66,7 +66,7 @@ URLS: dict[str, dict[str, str]] = {
         "eol_url": 'https://endoflife.date/api/python.json'
     },
     "ruby": {
-        "releases_url": 'https://github.com/actions/setup-ruby/releases/latest/',
+        "releases_url": 'https://github.com/ruby/setup-ruby/releases/latest/',
         "head_branch": 'master',
         "versions_url": 'https://raw.githubusercontent.com/ruby/setup-ruby/LATEST_TAG/ruby-builder-versions.json',
         "eol_url": 'https://endoflife.date/api/ruby.json'

@@ -20,12 +20,14 @@ jobs:
     outputs:
       version: ${{ steps.get-language-versions.outputs.latest-versions }}
     steps:
-    - uses: ./
-      id: get-language-versions
-      with:
-        language: "go"
-        highest-only: true
-        remove-patch-version: true
+      - name: Checkout the repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: ./
+        id: get-language-versions
+        with:
+          language: "go"
+          highest-only: true
+          remove-patch-version: true
 
   actionlint:
     name: Action Lint
@@ -46,12 +48,14 @@ jobs:
     outputs:
       version: ${{ steps.get-language-versions.outputs.latest-versions }}
     steps:
-    - uses: ./
-      id: get-language-versions
-      with:
-        language: "ruby"
-        highest-only: true
-        remove-patch-version: true
+      - name: Checkout the repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: ./
+        id: get-language-versions
+        with:
+          language: "ruby"
+          highest-only: true
+          remove-patch-version: true
 
   awesomebot:
     name: Awesomebot
@@ -76,12 +80,14 @@ jobs:
     outputs:
       version: ${{ steps.get-language-versions.outputs.latest-versions }}
     steps:
-    - uses: ./
-      id: get-language-versions
-      with:
-        language: "node"
-        highest-only: true
-        remove-patch-version: true
+      - name: Checkout the repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: ./
+        id: get-language-versions
+        with:
+          language: "node"
+          highest-only: true
+          remove-patch-version: true
 
   markdown-lint:
     name: Markdown Lint
@@ -104,12 +110,14 @@ jobs:
     outputs:
       version: ${{ steps.get-language-versions.outputs.latest-versions }}
     steps:
-    - uses: ./
-      id: get-language-versions
-      with:
-        language: "python"
-        highest-only: true
-        remove-patch-version: true
+      - name: Checkout the repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: ./
+        id: get-language-versions
+        with:
+          language: "python"
+          highest-only: true
+          remove-patch-version: true
 
   yaml-lint:
     name: YAML Lint
