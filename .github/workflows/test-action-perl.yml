@@ -36,7 +36,7 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup.outputs.version-matrix)}}
     steps:
       - name: Setup Perl ${{ matrix.version-matrix }}
-        uses: shogo82148/actions-setup-perl@795ea77474d1f81da5b0a04028a5b94d4118a9c2 # v1.20.2
+        uses: shogo82148/actions-setup-perl@b9fdc2813ba5e0239dd7bce477e5f37e86d145cc # v1.21.0
         with:
           perl-version: ${{ matrix.version-matrix }}
 
@@ -63,7 +63,7 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup-eol.outputs.version-matrix)}}
     steps:
       - name: Setup Perl ${{ matrix.version-matrix }}
-        uses: shogo82148/actions-setup-perl@795ea77474d1f81da5b0a04028a5b94d4118a9c2 # v1.20.2
+        uses: shogo82148/actions-setup-perl@b9fdc2813ba5e0239dd7bce477e5f37e86d145cc # v1.21.0
         with:
           perl-version: ${{ matrix.version-matrix }}
 
@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Perl ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
-        uses: shogo82148/actions-setup-perl@795ea77474d1f81da5b0a04028a5b94d4118a9c2 # v1.20.2
+        uses: shogo82148/actions-setup-perl@b9fdc2813ba5e0239dd7bce477e5f37e86d145cc # v1.21.0
         with:
           perl-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
 
@@ -114,7 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Perl ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
-        uses: shogo82148/actions-setup-perl@795ea77474d1f81da5b0a04028a5b94d4118a9c2 # v1.20.2
+        uses: shogo82148/actions-setup-perl@b9fdc2813ba5e0239dd7bce477e5f37e86d145cc # v1.21.0
         with:
           perl-version: ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
 
