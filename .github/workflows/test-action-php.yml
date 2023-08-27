@@ -19,7 +19,7 @@ jobs:
       version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -47,7 +47,7 @@ jobs:
       version-matrix: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -75,7 +75,7 @@ jobs:
       highest-version: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - name: Get versions
         uses: ./
         id: get-versions
@@ -100,7 +100,7 @@ jobs:
       highest-version: ${{ steps.get-versions.outputs.latest-versions }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - name: Get versions
         uses: ./
         id: get-versions
