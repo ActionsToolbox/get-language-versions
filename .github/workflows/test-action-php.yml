@@ -36,7 +36,7 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup.outputs.version-matrix)}}
     steps:
       - name: Setup PHP ${{ matrix.version-matrix }}
-        uses: shivammathur/setup-php@81cd5ae0920b34eef300e1775313071038a53429 # 2.27.0
+        uses: shivammathur/setup-php@a36e1e52ff4a1c9e9c9be31551ee4712a6cb6bd0 # 2.27.1
         with:
           php-version: ${{ matrix.version-matrix }}
 
@@ -63,7 +63,7 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup-eol.outputs.version-matrix)}}
     steps:
       - name: Setup PHP ${{ matrix.version-matrix }}
-        uses: shivammathur/setup-php@81cd5ae0920b34eef300e1775313071038a53429 # 2.27.0
+        uses: shivammathur/setup-php@a36e1e52ff4a1c9e9c9be31551ee4712a6cb6bd0 # 2.27.1
         with:
           php-version: ${{ matrix.version-matrix }}
 
@@ -89,7 +89,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup PHP ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
-        uses: shivammathur/setup-php@81cd5ae0920b34eef300e1775313071038a53429 # 2.27.0
+        uses: shivammathur/setup-php@a36e1e52ff4a1c9e9c9be31551ee4712a6cb6bd0 # 2.27.1
         with:
           php-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
 
@@ -115,7 +115,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup PHP ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
-        uses: shivammathur/setup-php@81cd5ae0920b34eef300e1775313071038a53429 # 2.27.0
+        uses: shivammathur/setup-php@a36e1e52ff4a1c9e9c9be31551ee4712a6cb6bd0 # 2.27.1
         with:
           php-version: ${{ needs.test-output-method-setup-highest-only-patch-only.outputs.highest-version }}
 
