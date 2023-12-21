@@ -111,7 +111,6 @@ def get_minimum_version_from_oel(language: str) -> str:
     versions_url: str = URLS[language]["eol_url"]
     min_version: str = MAX_VERSION
 
-    future: datetime.date = datetime.date.today() + datetime.timedelta(3650)
     for release in requests.get(versions_url, timeout=REQUESTS_TIMEOUT).json():
         try:
             semver.Version(release['cycle'])
@@ -120,13 +119,8 @@ def get_minimum_version_from_oel(language: str) -> str:
 
         if release['eol'] is True:
             continue
-        if release['eol'] is False:
-            if semver.parse(release['cycle']) < min_version:
-                min_version: str = semver.parse(release['cycle'])
-            continue
 
-        if (datetime.date.today() < datetime.date.fromisoformat(release['eol']) and datetime.date.fromisoformat(release['eol']) < future):
-            future = datetime.date.fromisoformat(release['eol'])
+        if (datetime.date.today() < datetime.date.fromisoformat(release['eol'])):
             min_version = semver.parse(release['cycle'])
 
     return min_version

@@ -16,15 +16,15 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-    - name: Handle greetings
-      uses: actions/first-interaction@1d8459ca65b335265f1285568221e229d45a995e # v1.1.1
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        issue-message: "Thank you for raising your first issue - all contributions to this project are welcome!"
-        pr-message: "Thank you for raising your first pull request - all contributions to this project are welcome!"
+      - name: Handle greetings
+        uses: actions/first-interaction@1d8459ca65b335265f1285568221e229d45a995e # v1.1.1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: "Thank you for raising your first issue - all contributions to this project are welcome!"
+          pr-message: "Thank you for raising your first pull request - all contributions to this project are welcome!"
 
   slack-workflow-status:
-    if: always()
+    if: always() && ${{ github.actor != 'dependabot[bot]' }}
     name: Slack Post Workflow Notification
     needs:
       - greeting

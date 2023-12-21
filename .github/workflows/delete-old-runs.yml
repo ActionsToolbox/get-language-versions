@@ -34,7 +34,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   slack-workflow-status:
-    if: always()
+    if: success() || failure()
     name: Slack Post Workflow Notification
     needs:
       - delete-old-workflows

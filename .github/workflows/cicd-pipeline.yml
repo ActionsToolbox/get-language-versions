@@ -1,19 +1,16 @@
 name: CICD Pipeline
 
-#
-# This is a repository specific local workflow - only the template is auto-generated
-#
-
-#
-# Start of Template (part 1)
-#
 on:
   push:
     branches:
       - '**'
+    paths-ignore:
+      - '**.md'
   pull_request:
     branches:
       - '**'
+    paths-ignore:
+      - '**.md'
   workflow_dispatch:
 
 env:
@@ -22,6 +19,8 @@ env:
 jobs:
   bandit:
     name: Bandit
+    uses: actionstoolbox/reusable-workflows/reusable-workflows/bandit.yml@main
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
@@ -92,7 +91,7 @@ jobs:
         run: bash <(curl -s https://raw.githubusercontent.com/CICDToolbox/pylint/master/pipeline.sh)
 
   slack-workflow-status:
-    if: always()
+    if: always() && ${{ github.actor != 'dependabot[bot]' }}
     name: Slack Post Workflow Notification
     needs:
       - bandit
