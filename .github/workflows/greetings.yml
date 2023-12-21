@@ -24,7 +24,7 @@ jobs:
         pr-message: "Thank you for raising your first pull request - all contributions to this project are welcome!"
 
   slack-workflow-status:
-    if: always() && ${{ github.actor != 'dependabot[bot]' }}
+    if: always() && github.actor != 'dependabot[bot]'
     name: Slack Post Workflow Notification
     needs:
       - greeting

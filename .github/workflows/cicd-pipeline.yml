@@ -4,111 +4,70 @@ on:
   push:
     branches:
       - '**'
-    paths-ignore:
-      - '**.md'
   pull_request:
     branches:
       - '**'
-    paths-ignore:
-      - '**.md'
   workflow_dispatch:
+    inputs:
+      slack-notify:
+        description: 'Notify Slack'
+        required: true
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 
 env:
   SLACK_NOTIFY: true
 
+permissions: read-all
+
 jobs:
   bandit:
     name: Bandit
-    uses: actionstoolbox/reusable-workflows/reusable-workflows/bandit.yml@main
-
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-      - name: Set up Python 3.11
-        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
-        with:
-          python-version: "3.11"
-      - name: Run Bandit
-        env:
-          EXCLUDE_FILES: '\.md$'
-        run: bash <(curl -s https://raw.githubusercontent.com/CICDToolbox/bandit/master/pipeline.sh)
-
-  pydocstyle:
-    name: Pydocstyle
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-      - name: Set up Python 3.11
-        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
-        with:
-          python-version: "3.11"
-      - name: Run Pydocstyle
-        run: bash <(curl -s https://raw.githubusercontent.com/CICDToolbox/pydocstyle/master/pipeline.sh)
+    uses: WolfSoftware/reusable-workflows/.github/workflows/reusable-bandit.yml@master
 
   pycodestyle:
     name: Pycodestyle
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-      - name: Set up Python 3.11
-        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
-        with:
-          python-version: "3.11"
-      - name: Run Pycodestyle
-        env:
-          EXCLUDE_FILES: '\.md$'
-        run: bash <(curl -s https://raw.githubusercontent.com/CICDToolbox/pycodestyle/master/pipeline.sh)
+    uses: WolfSoftware/reusable-workflows/.github/workflows/reusable-pycodestyle.yml@master
+
+  pydocstyle:
+    name: Pydocstyle
+    uses: WolfSoftware/reusable-workflows/.github/workflows/reusable-pydocstyle.yml@master
 
   pylama:
     name: Pylama
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-      - name: Set up Python 3.11
-        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
-        with:
-          python-version: "3.11"
-      - name: Run Pylama
-        run: bash <(curl -s https://raw.githubusercontent.com/CICDToolbox/pylama/master/pipeline.sh)
+    uses: WolfSoftware/reusable-workflows/.github/workflows/reusable-pylama.yml@master
 
   pylint:
     name: Pylint
+    uses: WolfSoftware/reusable-workflows/.github/workflows/reusable-pylint.yml@master
+
+  set-slack-notify:
+    name: Set Slack Notify
     runs-on: ubuntu-latest
+    outputs:
+      slack-notify: ${{ steps.set-slack-notify.outputs.slack-notify }}
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-      - name: Set up Python 3.11
-        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
-        with:
-          python-version: "3.11"
-      - name: Run Pylint
-        env:
-          EXCLUDE_FILES: '\.md$,setup.py'
-        run: bash <(curl -s https://raw.githubusercontent.com/CICDToolbox/pylint/master/pipeline.sh)
+      - name: Set Slack Notify
+        id: set-slack-notify
+        run: |
+          echo "slack-notify=${{ github.event.inputs.slack-notify || env.SLACK_NOTIFY }}" >> "${GITHUB_OUTPUT}"
 
   slack-workflow-status:
-    if: always() && ${{ github.actor != 'dependabot[bot]' }}
+    if: always() && github.actor != 'dependabot[bot]'
     name: Slack Post Workflow Notification
     needs:
       - bandit
-      - pydocstyle
       - pycodestyle
+      - pydocstyle
       - pylama
       - pylint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Slack Workflow Notifications
-        if: ${{ env.SLACK_NOTIFY == 'true' && github.event_name == 'push' }}
-        uses: Gamesight/slack-workflow-status@26a36836c887f260477432e4314ec3490a84f309 # v1.2.0
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          include_jobs: on-failure
-          include_commit_message: true
-#
-# End of Template (part 2)
-#
+      - set-slack-notify
+    uses: WolfSoftware/reusable-workflows/.github/workflows/reusable-slack.yml@master
+    with:
+      slack_notify: ${{ needs.set-slack-notify.outputs.slack-notify }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}

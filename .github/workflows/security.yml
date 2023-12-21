@@ -19,7 +19,7 @@ jobs:
         uses: zgosalvez/github-actions-ensure-sha-pinned-actions@f32435541e24cd6a4700a7f52bb2ec59e80603b1 # v2.1.4
 
   slack-workflow-status:
-    if: always() && ${{ github.actor != 'dependabot[bot]' }}
+    if: always() && github.actor != 'dependabot[bot]'
     name: Slack Post Workflow Notification
     needs:
       - harden_security
