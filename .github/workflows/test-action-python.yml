@@ -36,7 +36,7 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup.outputs.version-matrix)}}
     steps:
       - name: Setup Python ${{ matrix.version-matrix }}
-        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:
           python-version: ${{ matrix.version-matrix }}
 
@@ -63,7 +63,7 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup-eol.outputs.version-matrix)}}
     steps:
       - name: Setup Python ${{ matrix.version-matrix }}
-        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:
           python-version: ${{ matrix.version-matrix }}
 
@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Python ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
-        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:
           python-version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
 
@@ -114,7 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Python ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}
-        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:
           python-version: ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}
 
