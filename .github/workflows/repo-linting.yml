@@ -65,7 +65,7 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - name: Set up Ruby ${{ needs.get-ruby-version.outputs.version }}
-        uses: ruby/setup-ruby@961f85197f92e4842e3cb92a4f97bd8e010cdbaf # v1.165.0
+        uses: ruby/setup-ruby@360dc864d5da99d54fcb8e9148c14a84b90d3e88 # v1.165.1
         with:
           ruby-version: ${{ needs.get-ruby-version.outputs.version }}
       - name: Run Awesomebot
