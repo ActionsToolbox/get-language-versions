@@ -36,7 +36,7 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup.outputs.version-matrix)}}
     steps:
       - name: Setup Terraform ${{ matrix.version-matrix }}
-        uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
+        uses: hashicorp/setup-terraform@97f030cf6dc0b4f5e0da352c7bca9cca34579800 # v3.1.0
         with:
           terraform_version: ${{ matrix.version-matrix }}
 
@@ -63,7 +63,7 @@ jobs:
         version-matrix: ${{fromJson(needs.test-output-method-setup-eol.outputs.version-matrix)}}
     steps:
       - name: Setup Terraform ${{ matrix.version-matrix }}
-        uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
+        uses: hashicorp/setup-terraform@97f030cf6dc0b4f5e0da352c7bca9cca34579800 # v3.1.0
         with:
           terraform_version: ${{ matrix.version-matrix }}
 
@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Terraform ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
-        uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
+        uses: hashicorp/setup-terraform@97f030cf6dc0b4f5e0da352c7bca9cca34579800 # v3.1.0
         with:
           terraform_version: ${{ needs.test-output-method-setup-highest-only.outputs.highest-version }}
 
@@ -114,7 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Terraform ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}
-        uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
+        uses: hashicorp/setup-terraform@97f030cf6dc0b4f5e0da352c7bca9cca34579800 # v3.1.0
         with:
           terraform_version: ${{ needs.test-output-method-setup-highest-only-strip-patch.outputs.highest-version }}
 
