@@ -125,7 +125,7 @@ def get_minimum_version_from_oel(language: str) -> str:
                 min_version: str = semver.parse(release['cycle'])
             continue
 
-        if (datetime.date.today() < datetime.date.fromisoformat(release['eol'])):
+        if datetime.date.today() < datetime.date.fromisoformat(release['eol']):
             min_version = semver.parse(release['cycle'])
 
     return min_version
