@@ -120,6 +120,11 @@ def get_minimum_version_from_oel(language: str) -> str:
         if release['eol'] is True:
             continue
 
+        if release['eol'] is False:
+            if semver.parse(release['cycle']) < min_version:
+                min_version: str = semver.parse(release['cycle'])
+            continue
+
         if (datetime.date.today() < datetime.date.fromisoformat(release['eol'])):
             min_version = semver.parse(release['cycle'])
 
@@ -408,7 +413,8 @@ def main(language: str,
          include_prereleases: str = 'false',
          highest_only: str = 'false',
          remove_patch_version: str = 'false',
-         use_head: str = 'false') -> None:
+         use_head: str = 'false',
+         max_versions: int = 0) -> None:
     """
     Handle input from Docker container.
 
@@ -438,6 +444,7 @@ def main(language: str,
     highest_only: bool = strtobool(highest_only)
     remove_patch_version: bool = strtobool(remove_patch_version)
     use_head: bool = strtobool(use_head)
+    max_versions: int = int(max_versions)
 
     if remove_patch_version and include_prereleases:
         print("You cannot combine include_prereleases with remove_patch")
@@ -464,6 +471,9 @@ def main(language: str,
     if highest_only:
         version_json = versions[-1]
     else:
+        if max_versions > 0:
+            versions = versions[-max_versions:]
+
         version_json = json.dumps(versions)
 
     output_version_details(version_json)

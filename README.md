@@ -64,6 +64,7 @@ To use the action, simply throw this into one of your workflows
     language: "python"
     min-version: 3.7            # not required - defaults to "EOL"
     max-version: 3.10           # not required - defaults to latest
+    max-versions: 0             # not required - defaults to latest
     include-prereleases: true   # not required - defaults to false
     highest-only: true          # not required - defaults to false
     remove-patch-version: true  # not required - defaults to false
@@ -82,6 +83,7 @@ ${{ steps.get-versions.outputs.latest-versions }}
 | language             | Yes      |          | Go, Node, Perl, PHP, Python, Ruby or Terraform. |
 | min-version          | No       | "EOL"    | semver, "EOL" or "ALL"                          |
 | max-version          | No       | "latest" | semver or "latest"                              |
+| max-versions         | No       | 0        | 0-N (N is number of versions to return.         |
 | include-prereleases  | No       | false    | true or false                                   |
 | highest-only         | No       | false    | true or false                                   |
 | remove-patch-version | No       | false    | true or false                                   |

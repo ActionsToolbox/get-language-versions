@@ -15,6 +15,10 @@ inputs:
     description: 'The maximum major.minor version to include or "latest".'
     required: false
     default: 'latest'
+  max-versions:
+    description: 'The maximum number of versions to include.'
+    required: false
+    default: 0
   include-prereleases:
     description: 'Whether to include new version of Python that have no official releases.'
     required: false
@@ -46,3 +50,4 @@ runs:
     - ${{ inputs.highest-only }}
     - ${{ inputs.remove-patch-version }}
     - ${{ inputs.use-head }}
+    - ${{ inputs.max-versions }}
